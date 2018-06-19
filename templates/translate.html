@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block pageTitle %}
+    INDEX
+{% endblock %}
+
+{% block pageHeadExtra %}
+    <link href="{% static 'jquery.loading.css' %}" rel="stylesheet">
+    <style>
+        textarea {
+            height: 100%;
+            width: 100%;
+            border-radius: 5px;
+            border-color: #dddddd;
+            padding: 15px;
+            -webkit-appearance: none;
+            outline: 0 !important;
+            resize: none
+        }
+
+        .panel-body {
+            overflow-y: scroll;
+            height: 100%;
+        }
+
+
+    </style>
+
+    <link rel="stylesheet" href="{% static 'js/bootstrap3-wysihtml5.css' %}">
+{% endblock %}
+
+{% block pageBody %}
+    <div class="row"
+         style="position: absolute;left: 50%;top:50%;transform: translate3D(-50%, -50%,0); width: 80%; height: 80%">
+        <div class="col-sm-8" style="height: 100%">
+            <textarea data-hashed="{{ hashed }}" data-inc="{{ inc }}" id="my-textarea"></textarea>
+        </div>
+
+        <div id="interaction" class="col-sm-4" style="height:100%">
+            <div id="original-panel" class="panel panel-default" style="height: 20%">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        {% trans 'Original Text' %}
+                    </h3>
+                </div>
+                <div id="original-body" class="panel-body">
+
+                </div>
+            </div>
+            <div id="translation-panel" class="panel panel-default" style="height: 20%">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="panel-title">
+                                {% trans 'Translation' %}
+                            </h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <a id="add-to-v-button" class="pull-right" href="#">{% trans 'Add To Vocabulary' %}</a>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div id="translation-body" class="panel-body">
+
+                </div>
+            </div>
+
+
+            <div id="users-panel" class="panel panel-default" style="height: 54%;">
+                <div id="users-panel-header" class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="panel-title">
+                                {% trans "Users' Translations" %}
+                            </h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <a id="submit-mine-button" style="cursor: pointer; display: block; height: 15px"
+                               class="pull-right">{% trans 'Submit My Translation' %}</a>
+                        </div>
+                    </div>
+
+                </div>
+                <div id="users-body" class="panel-body" style="max-height: 85%">
+                    <div id="users-list" style="max-height: 100%">
+                        <ul class="media-list" id="users-list-ul">
+
+                        </ul>
+                    </div>
+                    <div id="submit-area" style="height: 100%;width: 100%; display: none">
+                        <textarea id="my-translation-text"></textarea>
+                        <button id="submit-button" class="btn btn-primary pull-right">{% trans 'Submit' %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+{% endblock %}
+{% block pageFootExtra %}
+    <script src="{% static 'jquery.loading.js' %}"></script>
+    <script src="{% static 'doT.js' %}"></script>
+    <script src="{% static 'js/wysihtml5-0.3.0.js' %} "></script>
+    <script src="{% static 'js/bootstrap3-wysihtml5.js' %}"></script>
+    <script src="{% static 'jquery.base64.js' %}"></script>
+    <script>
+        $("#my-textarea").wysihtml5();
+
+
+        var currentIsSubmit = false;
+
+        $("#submit-mine-button").on('click', function () {
+            if (currentIsSubmit) {
+                backToUsers();
+            }
+            else {
+                switchToSubmit();
+            }
+            currentIsSubmit = !currentIsSubmit;
+        });
+
+        function switchToSubmit() {
+            $("#submit-mine-button").text("{% trans 'Cancel' %}");
+            $("#users-list").css('display', 'none');
+            $("#submit-area").css('display', 'inline');
+        }
+
+        function backToUsers() {
+            $("#submit-mine-button").text("{% trans 'Submit Mine' %}");
+            $("#users-list").css('display', 'inline');
+            $("#submit-area").css('display', 'none');
+        }
+
+
+        function showSubmitButton(show) {
+            if (show) {
+                $("#submit-mine-button").css('pointer-events', 'all').css('display', 'block');
+                currentIsSubmit = false;
+            }
+            else {
+                $("#submit-mine-button").css('pointer-events', 'none').css('display', 'none');
+            }
+        }
+
+        $("#submit-button").on('click', function () {
+            let translated = $("#my-translation-text").val().trim();
+            if (translated === '') {
+                showModal("不能为空");
+                return;
+            }
+            $.request({
+                url: '/translation/submit',
+                data: {text: requesting_text, translated: translated},
+                onSuccess: function (json) {
+                    showLoading(false);
+                    showModal("成功！");
+                    $("#my-translation-text").val("");
+                    backToUsers();
+                    showSubmitButton(false);
+                    replaceTranslation(translated);
+
+                },
+                onError: function (json) {
+                    showLoading(false);
+                }
+            })
+        });
+
+        function showLoading(show) {
+            if (show) {
+                $("#interaction").loading();
+            }
+            else {
+                $("#interaction").loading('stop');
+            }
+        }
+
+
+        function showAddToVocabularyButton(show, can_add) {
+            if (show) {
+                if (can_add) {
+                    $("#add-to-v-button").css('pointer-events', 'all').css('display', 'block').text("{% trans 'Add to vocabulary'%}");
+                }
+                else {
+                    $("#add-to-v-button").css('pointer-events', 'none').css('display', 'block').text("{% trans 'Already in vocab' %}");
+                }
+            }
+            else {
+
+                $("#add-to-v-button").css('pointer-events', 'none').css('display', 'none');
+            }
+        }
+
+
+        function loadTranslations(translationList) {
+            if (!translationList) {
+                $("#original-body").empty();
+                $("#users-list-ul").empty();
+                $("#translation-body").empty();
+                backToUsers();
+                showSubmitButton(false);
+                showAddToVocabularyButton(false);
+                return;
+            }
+            $("#translation-body").text(translationList.text);
+            $("#users-list-ul").empty();
+            requesting_trans = translationList.text;
+            let html = '<li class="media">\n' +
+                '                                <div class="media-left">\n' +
+                '                                    <img src="{% templatetag openvariable %}=it.avatar_url{% templatetag closevariable %}" class="img-circle">\n' +
+                '                                </div>\n' +
+                '                                <div class="media-body">\n' +
+                '                                    <h4 class="media-heading">\n' +
+                '                                        {% templatetag openvariable %}=it.username{% templatetag closevariable %}\n' +
+                '                                        <br>\n' +
+                '                                        <small>\n' +
+                '                                            {% trans "Translated on" %} {% templatetag openvariable %}=it.time{% templatetag closevariable %} <a href="#" onclick="replaceTranslation(&quot;{% templatetag openvariable %}=it.translation{% templatetag closevariable %}&quot;)">{% trans 'Use This One' %}</a> ' +
+                '                                            <a data-tid="{% templatetag openvariable %}=it.id{% templatetag closevariable %}" class="dislike-button pull-right" style="text-decoration: none;" href="#" class="pull-right" style="margin-left: 10px;">\n' +
+                '                                               {% templatetag openvariable %}=it.dislikes{% templatetag closevariable %}<span class="glyphicon glyphicon-thumbs-down">&nbsp;</span>\n' +
+                '                                            </a>\n' +
+                '                                            <a data-tid="{% templatetag openvariable %}=it.id{% templatetag closevariable %}" class="like-button pull-right" style="text-decoration: none;" href="#" class="pull-right" style="margin-left: 10px;">\n' +
+                '                                               {% templatetag openvariable %}=it.likes{% templatetag closevariable %}<span class="glyphicon glyphicon-thumbs-up">&nbsp;</span>\n' +
+                '                                            </a>\n' +
+                '                                        </small>\n' +
+                '                                    </h4>\n' +
+                '                                    <p>\n' +
+                '                                    {% templatetag openvariable %}=it.translation{% templatetag closevariable %}</p>\n' +
+                '                                </div>\n' +
+                '                            </li>';
+            var template = doT.template(html);
+            translationList.users.forEach(function (element) {
+                $(template(element)).appendTo($("#users-list-ul"));
+            });
+            $(".like-button").on('click', function () {
+                let btn = $(this);
+                showLoading(true);
+                $.request({
+                    url: '/translation/rate',
+                    data: {'id': $(this).data('tid'), 'liked': true},
+                    onSuccess: function (json) {
+                        showLoading(false);
+                        console.log($(this));
+                        btn.html(json.likes + "<span class=\"glyphicon glyphicon-thumbs-up\">&nbsp;</span>");
+                        btn.attr("disabled", true);
+                        btn.css('pointer-events', 'none');
+                        btn.prev().css('pointer-events', 'none');
+                    },
+                    onError: function (json) {
+                        showLoading(false);
+                    }
+                })
+            });
+            $(".dislike-button").on('click', function () {
+                let btn = $(this);
+                showLoading(true);
+                $.request({
+                    url: '/translation/rate',
+                    data: {'id': $(this).data('tid'), 'liked': false},
+                    onSuccess: function (json) {
+                        showLoading(false);
+                        btn.html(json.dislikes + "<span class=\"glyphicon glyphicon-thumbs-down\">&nbsp;</span>");
+                        btn.css('pointer-events', 'none');
+                        btn.next().css('pointer-events', 'none');
+
+                    },
+                    onError: function (json) {
+                        showLoading(false);
+                    }
+                })
+            });
+        }
+
+
+        var requesting_text = null;
+        var requesting_trans = null;
+        var current_anchor_id = null;
+
+        function textSelected(text, onSuccess, onError) {
+            if (text === '') {
+                return;
+            }
+            $("body").loading();
+            $.request({
+                url: '/translation/translate',
+                data: {text: text},
+                onSuccess: function (json) {
+                    backToUsers();
+                    showSubmitButton(true);
+                    requesting_text = text;
+                    if (text.match(" ")) {
+                        showAddToVocabularyButton(false);
+                    }
+                    else {
+                        showAddToVocabularyButton(true, !json.in_vocab);
+                    }
+
+                    $("body").loading('stop');
+                    loadTranslations(json);
+                    $("#original-body").text(text);
+                    if (onSuccess) {
+                        onSuccess(json.text);
+                    }
+
+                },
+                onError: function () {
+                    $("body").loading('stop');
+                    if (onError) {
+                        onError();
+                    }
+
+                }
+            });
+        }
+
+        function registerOnSelect() {
+            let f = $(".wysihtml5-sandbox")[0];
+            let frameWindow = f.contentWindow;
+            let frameDocument = f.contentDocument;
+
+            function randomString(len) {
+                len = len || 32;
+                var $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefhijkmnoprstuvwxyz012345678';
+                var maxPos = $chars.length;
+                var pwd = '';
+                for (var i = 0; i < len; i++) {
+                    pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+                }
+                return pwd;
+            }
+
+            frameDocument.onmouseup = function () {
+                let pattern = new RegExp("</[a-zA-Z]+>");
+                let selection = frameWindow.getSelection();
+
+
+                if (selection.rangeCount) {
+                    var container = document.createElement("div");
+                    let range = selection.getRangeAt(0);
+                    let parent = range.startContainer.parentNode;
+                    if ((parent.nodeName === 'A' && parent.hasAttribute('data-original')) || parent.nodeName === 'IMG') {
+                        return;
+                    }
+                    container.appendChild(range.cloneContents());
+                    let html = container.innerText;
+                    if (html.trim() === "" || html.match(pattern) !== null) {
+                        return;
+                    }
+                    textSelected(html.trim(), function (word) {
+                        range.deleteContents();
+                        let tid = '_' + randomString(6);
+                        window.parent.current_anchor_id = tid;
+                        range.insertNode(document.createRange().createContextualFragment('<a id="' + tid + '" title="" style="cursor:pointer;color:blue" data-original="' + html + '" onclick="window.parent.outerBack(&quot;' + tid + '&quot;)">' + word + '</a>'));
+                    });
+                }
+            }
+        }
+
+
+        function outerBack(anchor_id) {
+            let a = $(".wysihtml5-sandbox").contents().find("#" + anchor_id);
+            a.replaceWith(a.data('original'));
+            loadTranslations();
+        }
+
+        function replaceTranslation(text) {
+            if (current_anchor_id) {
+                $(".wysihtml5-sandbox").contents().find("#" + current_anchor_id).text(text);
+            }
+        }
+
+        function setContent(text) {
+            $(".wysihtml5-sandbox").contents().find("body").html(text);
+        }
+
+        function getContent() {
+            return $(".wysihtml5-sandbox").contents().find("body").html();
+        }
+
+
+        $("#add-to-v-button").on('click', function () {
+            $.request({
+                url: '/add_word',
+                data: {word: requesting_text, trans: requesting_trans},
+                onSuccess: function () {
+                    showAddToVocabularyButton(true, false);
+                    showModal("{% trans 'This word is now in your vocabulary.' %}", "{% trans 'Success' %}");
+                },
+                onError: function () {
+                    showAddToVocabularyButton(true, true);
+                }
+            })
+        });
+
+
+        registerOnSelect();
+        showSubmitButton(false);
+        $(".wysihtml5-toolbar").remove();
+
+
+        $(window).bind("beforeunload", function (e) {
+            console.log(getContent());
+            $.request({
+                url: '/save',
+                data: {
+                    hashed: $("#my-textarea").data('hashed'),
+                    translated: getContent(),
+                    inc: $("#my-textarea").data('inc')
+                },
+                async: false
+            });
+            return confirm("{% trans 'Press OK to save your translation.' %}");
+        });
+        $(function () {
+            var base64 = "{{ text }}";
+            var text;
+            try {
+                text = $.base64.atob(base64, true);
+            }
+            catch (e) {
+                text = base64;
+            }
+            setContent(text);
+
+        });
+        showAddToVocabularyButton(false);
+    </script>
+{% endblock %}

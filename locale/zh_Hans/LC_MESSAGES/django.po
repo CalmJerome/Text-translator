@@ -1,0 +1,330 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-02 09:55+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: templates/base.html:37
+msgid "Info"
+msgstr "消息"
+
+#: templates/base.html:41 templates/reset_password.html:35
+#: templates/settings.html:24
+msgid "OK"
+msgstr "确定"
+
+#: templates/base.html:57 templates/translate_index.html:42
+msgid "Translate"
+msgstr "翻译"
+
+#: templates/base.html:86
+msgid "My Vocabulary"
+msgstr "我的生词本"
+
+#: templates/base.html:88
+msgid "Settings"
+msgstr "设置"
+
+#: templates/base.html:89
+msgid "Log Out"
+msgstr "注销"
+
+#: templates/base.html:92 templates/login.html:22 templates/login.html:43
+msgid "Login"
+msgstr "登陆"
+
+#: templates/base.html:93 templates/register.html:22 templates/register.html:49
+msgid "Register"
+msgstr "注册"
+
+#: templates/login.html:32
+msgid "Username or Email"
+msgstr "用户名或邮箱地址"
+
+#: templates/login.html:41
+msgid "Forgot Password?"
+msgstr "忘记密码？"
+
+#: templates/register.html:31 templates/settings.html:33
+msgid "Username"
+msgstr "用户名"
+
+#: templates/register.html:39
+msgid "Password"
+msgstr "密码"
+
+#: templates/register.html:45 templates/reset_password.html:30
+msgid "Confirm Password"
+msgstr "确认密码"
+
+#: templates/register.html:87 templates/settings.html:124
+msgid "Image cannot exceed 2MB!"
+msgstr "图片不能超过2MB！"
+
+#: templates/register.html:87 templates/settings.html:124
+#: templates/settings.html:148 templates/translate_index.html:62
+#: templates/translate_index.html:76 templates/translate_index.html:88
+msgid "Error"
+msgstr "错误"
+
+#: templates/reset_password.html:19 templates/reset_request.html:19
+msgid "Reset Password"
+msgstr "重置密码"
+
+#: templates/reset_password.html:25 templates/settings.html:68
+msgid "New Password"
+msgstr "新密码"
+
+#: templates/reset_request.html:32
+msgid "Send Reset Email"
+msgstr "发送重置邮件"
+
+#: templates/settings.html:41
+msgid "Email address"
+msgstr "邮箱地址"
+
+#: templates/settings.html:45
+msgid "Verified"
+msgstr "已验证"
+
+#: templates/settings.html:47
+msgid "Not Verified"
+msgstr "未验证"
+
+#: templates/settings.html:55
+msgid "Send verification email"
+msgstr "发送验证邮件"
+
+#: templates/settings.html:61
+msgid "Old Password"
+msgstr "原密码"
+
+#: templates/settings.html:64
+msgid "Needed when changing password"
+msgstr "修改密码时才需填写"
+
+#: templates/settings.html:74
+msgid "Password Confirmation"
+msgstr "确认密码"
+
+#: templates/settings.html:87
+msgid "Save"
+msgstr "保存"
+
+#: templates/settings.html:148
+msgid "An error occurred!"
+msgstr "发生了错误"
+
+#: templates/translate.html:44
+msgid "Original Text"
+msgstr "原文"
+
+#: templates/translate.html:56 templates/vocabulary.html:49
+msgid "Translation"
+msgstr "译文"
+
+#: templates/translate.html:60
+msgid "Add To Vocabulary"
+msgstr "添加到生词本"
+
+#: templates/translate.html:77
+msgid "Users' Translations"
+msgstr "其他用户的翻译"
+
+#: templates/translate.html:82
+msgid "Submit My Translation"
+msgstr "提交我的翻译"
+
+#: templates/translate.html:95
+msgid "Submit"
+msgstr "提交"
+
+#: templates/translate.html:128
+msgid "Cancel"
+msgstr "取消"
+
+#: templates/translate.html:134
+msgid "Submit Mine"
+msgstr "提交我的翻译"
+
+#: templates/translate.html:187
+msgid "Add to vocabulary"
+msgstr "添加到生词本"
+
+#: templates/translate.html:190
+msgid "Already in vocab"
+msgstr "已在生词本中"
+
+#: templates/translate.html:222
+msgid "Translated on"
+msgstr "翻译于"
+
+#: templates/translate.html:222
+msgid "Use This One"
+msgstr "使用这个翻译"
+
+#: templates/translate.html:391
+msgid "This word is now in your vocabulary."
+msgstr "单词已添加到生词本"
+
+#: templates/translate.html:391
+msgid "Success"
+msgstr "成功"
+
+#: templates/translate.html:416
+msgid "Press OK to save your translation."
+msgstr "点击确定保存翻译"
+
+#: templates/translate_index.html:22
+msgid "Start Translating"
+msgstr "开始翻译"
+
+#: templates/translate_index.html:32
+msgid "Upload a Text File"
+msgstr "上传文本文件"
+
+#: templates/translate_index.html:36
+msgid "Or Enter a Web URL"
+msgstr "或者输入一个网址"
+
+#: templates/translate_index.html:62
+msgid "Please upload a file or enter a valid url."
+msgstr "请上传文件或输入有效的网址"
+
+#: templates/translate_index.html:76
+msgid "An error occurred"
+msgstr "发生了错误"
+
+#: templates/translate_index.html:88
+msgid "File cannot exceed 1MB!"
+msgstr "文件不能超过1MB！"
+
+#: templates/vocabulary.html:20
+msgid "Sort by"
+msgstr "排序"
+
+#: templates/vocabulary.html:23
+msgid "Added Time"
+msgstr "添加时间"
+
+#: templates/vocabulary.html:26 templates/vocabulary.html:48
+msgid "Word"
+msgstr "单词"
+
+#: templates/vocabulary.html:29 templates/vocabulary.html:47
+msgid "Lookup Count"
+msgstr "查询次数"
+
+#: templates/vocabulary.html:35
+msgid "Descending"
+msgstr "降序"
+
+#: templates/vocabulary.html:38
+msgid "Ascending"
+msgstr "升序"
+
+#: templates/vocabulary.html:41
+msgid "Sort"
+msgstr "排序"
+
+#: templates/vocabulary.html:50
+msgid "Time Added"
+msgstr "添加时间"
+
+#: templates/vocabulary.html:51
+msgid "Action"
+msgstr "操作"
+
+#: templates/vocabulary.html:63
+msgid "Delete"
+msgstr "删除"
+
+#: translator/settings.py:115
+msgid "English"
+msgstr "英语"
+
+#: translator/settings.py:116
+msgid "简体中文"
+msgstr "Simplified Chinese"
+
+#: translator/views.py:168 translator/views.py:190
+msgid "Wrong password"
+msgstr "密码错误"
+
+#: translator/views.py:171 translator/views.py:218 translator/views.py:292
+msgid "Passwords are not the same"
+msgstr "两次密码不一致"
+
+#: translator/views.py:195 translator/views.py:270
+msgid "User not found"
+msgstr "用户不存在"
+
+#: translator/views.py:222
+msgid "Username or email already exists"
+msgstr "用户名或邮箱地址已存在"
+
+#: translator/views.py:246
+msgid "Email Verified!"
+msgstr "邮箱验证成功！"
+
+#: translator/views.py:247 translator/views.py:280 translator/views.py:297
+msgid "Invalid Link"
+msgstr "无效的链接"
+
+#: translator/views.py:261
+msgid "Email not verified. Please contact admin."
+msgstr "邮箱为验证，请联系管理员"
+
+#: translator/views.py:267
+#, python-format
+msgid ""
+"A reset email has been sent to %(email)s. Please click the link in it to "
+"reset your password."
+msgstr "一封重置密码邮件已发送到%(email)s，请点击其中的链接来重置密码。"
+
+#: translator/views.py:296
+msgid "Password reset!"
+msgstr "密码已重置！"
+
+#: translator/views.py:380
+#, python-format
+msgid ""
+"A verification email has been sent to %(email)s. Please click the link in it "
+"to verify your email."
+msgstr "一封验证邮件已发送到%(email)s，请点击其中的链接来验证邮箱地址。"
+
+#: translator/views.py:387
+msgid "Verify Your Email Address"
+msgstr "验证邮箱地址"
+
+#: translator/views.py:388
+#, python-format
+msgid ""
+"Click the link below to verify your email address.\n"
+"%(link)s"
+msgstr "点击下方的链接来验证邮箱地址：\n%(link)s"
+
+#: translator/views.py:395
+msgid "Reset Your Password"
+msgstr "重置密码"
+
+#: translator/views.py:396
+#, python-format
+msgid ""
+"Click the link below to reset your password.\n"
+"%(link)s"
+msgstr "点击下方的链接来重置密码：\n%(link)s"

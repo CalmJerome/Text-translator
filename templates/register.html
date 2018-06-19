@@ -1,0 +1,126 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block pageTitle %}
+    INDEX
+{% endblock %}
+
+{% block pageHeadExtra %}
+    <link rel="stylesheet" href="{% static 'cropper.css' %}">
+    <script src="{% static 'cropper.js' %}"></script>
+    <script src="{% static 'jquery-cropper.js' %}"></script>
+{% endblock %}
+
+{% block pageBody %}
+    <div class="row" style="height:100%">
+        <div class="col-md-12">
+            <div class="modal-dialog" style="margin-bottom:0">
+                <div class="modal-content">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{% trans 'Register' %}</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if error %}
+                            <h4 style="color: red">{{ error }}</h4>
+                        {% endif %}
+                        <form role="form" action="register" method="post">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="{% trans 'Username' %}" name="username" value="{{ username }}"
+                                           autofocus="autofocus">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Email" name="email" type="email" value="{{ email }}"
+                                           autofocus="">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="{% trans 'Password' %}" name="password"
+                                           type="password"
+                                           value="">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control"
+                                           placeholder="{% trans 'Confirm Password' %}" name="confirm"
+                                           type="password" value="">
+                                </div>
+
+                                <button type="submit" class="btn btn-sm btn-success">{% trans 'Register' %}</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}
+{% block pageFootExtra %}
+
+    <script>
+        $(function () {
+            var $image = $('#image');
+
+            $image.cropper({
+                aspectRatio: 1,
+                responsive: false,
+                minContainerHeight: 300,
+                viewMode: 1,
+                crop: function (event) {
+
+                }
+            });
+
+            // Get the Cropper.js instance after initialized
+            var cropper = $image.data('cropper');
+
+
+            $("#select-avatar").on('change', function () {
+                if (this.files.length === 0) {
+                    return;
+                }
+
+                if (this.files[0] > 2048) {
+                    showModal("{% trans 'Image cannot exceed 2MB!' %}", "{% trans 'Error' %}");
+                    return;
+                }
+
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    cropper.replace(e.target.result);
+                };
+                reader.readAsDataURL(this.files[0]);
+
+            });
+            $("#upload-avatar").on('click', function () {
+                cropper.getCroppedCanvas().toBlob(function (blob) {
+                    console.log(blob);
+                    return;
+                    var formData = new FormData();
+
+                    formData.append('croppedImage', blob);
+
+                    // Use `jQuery.ajax` method
+                    $.ajax('/path/to/upload', {
+                        method: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            console.log('Upload success');
+                        },
+                        error: function () {
+                            console.log('Upload error');
+                        }
+                    });
+                });
+            })
+
+        })
+
+
+    </script>
+{% endblock %}

@@ -1,0 +1,96 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block pageTitle %}
+    INDEX
+{% endblock %}
+
+{% block pageHeadExtra %}
+    <link rel="stylesheet" href="{% static 'cropper.css' %}">
+    <script src="{% static 'cropper.js' %}"></script>
+    <script src="{% static 'jquery-cropper.js' %}"></script>
+{% endblock %}
+
+{% block pageBody %}
+    <div class="row" style="height:100%">
+        <div class="col-md-12">
+            <div class="modal-dialog" style="margin-bottom:0">
+                <div class="modal-content">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{% trans 'Start Translating' %}</h3>
+
+                    </div>
+                    <div class="panel-body">
+                        {% if error %}
+                            <h4 style="color: red">{{ error }}</h4>
+                        {% endif %}
+                        <form role="form" method="post">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label>{% trans 'Upload a Text File' %}</label>
+                                    <input id="text-file" class="form-control" type="file" accept=".txt,.html">
+                                </div>
+                                <div class="form-group">
+                                    <label>{% trans 'Or Enter a Web URL' %}</label>
+                                    <input id="url-input" class="form-control" placeholder="URL"
+                                           value="">
+                                </div>
+
+                                <button id="translate-btn" type="button"
+                                        class="btn btn-sm btn-success">{% trans 'Translate' %}</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock %}
+{% block pageFootExtra %}
+
+    <script>
+        $(function () {
+            var current_file = null;
+            $("#translate-btn").on('click', function () {
+                let url = $("#url-input").val().trim();
+                if (current_file === null && url === '') {
+                    showModal("{% trans 'Please upload a file or enter a valid url.' %}", "{% trans 'Error' %}");
+                }
+                else if (current_file) {
+                    var f = new FormData();
+                    f.append('file', current_file);
+                    $.ajax({
+                        url: '/post',
+                        data: f,
+                        method: 'POST',
+                        processData: false,
+                        contentType: false,
+                    }).done(function (data) {
+                        window.location.href = '/translate?file_id=' + data.file_id;
+                    }).fail(function (jqXHR) {
+                        showModal("{% trans 'An error occurred' %}", "{% trans 'Error' %}");
+                    })
+                }
+                else {
+                    window.location.href = '/translate?url=' + url;
+                }
+            });
+            $("#text-file").on('change', function () {
+                if (this.files.length === 0) {
+                    return;
+                }
+                if (this.files[0] > 1024) {
+                    showModal("{% trans 'File cannot exceed 1MB!' %}", "{% trans 'Error' %}");
+                    return;
+                }
+                current_file = this.files[0];
+
+            });
+        })
+    </script>
+{% endblock %}

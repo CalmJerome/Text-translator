@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block pageTitle %}
+    INDEX
+{% endblock %}
+
+{% block pageHeadExtra %}
+
+{% endblock %}
+
+{% block pageBody %}
+    <div class="container">
+
+        <div id="vocab-panel">
+
+
+            <div class="row">
+                <div class="pull-left">
+                    {% trans 'Sort by' %}
+                    <select id="sort-by" class="show-menu-arrow show-tick" data-width="auto">
+                        <option value="time" {% if sort == 'time' %} selected="selected" {% endif %}>
+                            {% trans 'Added Time' %}
+                        </option>
+                        <option value="word" {% if sort == 'word' %} selected="selected" {% endif %}>
+                            {% trans 'Word' %}
+                        </option>
+                        <option value="count" {% if sort == 'count' %} selected="selected" {% endif %}>
+                            {% trans 'Lookup Count' %}
+                        </option>
+                    </select>
+
+                    <select id="sort-order" class="selectpicker show-menu-arrow show-tick" data-width="auto">
+                        <option value="desc" {% if not asc %} selected="selected" {% endif %}>
+                            {% trans 'Descending' %}
+                        </option>
+                        <option value="asc" {% if asc %} selected="selected" {% endif %}>
+                            {% trans 'Ascending' %}
+                        </option>
+                    </select>
+                    <button id="sort-btn" class="btn-small btn-success" style="width: 50px">{% trans 'Sort' %}</button>
+                </div>
+                <div id="vocab-table" class="col-sm-12">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th class="col-sm-1">{% trans 'Lookup Count' %}</th>
+                            <th class="col-sm-3">{% trans 'Word' %}</th>
+                            <th class="col-sm-4">{% trans 'Translation' %}</th>
+                            <th class="col-sm-2">{% trans 'Time Added' %}</th>
+                            <th class="col-sm-2">{% trans 'Action' %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for vocab in vocab_list %}
+                            <tr class="vocab-row" data-vocab-id="{{ vocab.id }}">
+                                <td class="col-sm-1">{{ vocab.count }}</td>
+                                <td class="col-sm-3">{{ vocab.word }}</td>
+                                <td class="col-sm-4">{{ vocab.trans }}</td>
+                                <td class="col-sm-2">{{ vocab.time }}</td>
+                                <td class="col-sm-2">
+                                    <button class="delete-button btn btn-sm btn-danger"
+                                            data-vid="{{ vocab.id }}">{% trans 'Delete' %}</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-sm-12 paginator-wrapper text-center">
+                    <ul id="paginator" data-page-count="{{ page_count }}"
+                        data-current-page="{{ current_page }}">
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block pageFootExtra %}
+    <script src="{% static 'bootstrap-paginator.js' %}"></script>
+    <script>
+
+        $(function () {
+            $("#sort-btn").on('click', function () {
+                window.location = '/vocabulary?page={{ current_page }}&sort=' + $("#sort-by").val() + ($("#sort-order").val() === "asc" ? '&asc=1' : '');
+            });
+            var paginator = $('#paginator');
+            var options = {
+                bootstrapMajorVersion: 3,
+                currentPage: paginator.data('current-page'),
+                numberOfPages: 15,
+                totalPages: paginator.data('page-count'),
+                onPageClicked: function (e, originalEvent, type, page) {
+                    window.location.href = '/vocabulary?page=' + page + '&sort=' + $("#sort-by").val() + ($("#sort-order").val() === "asc" ? '&asc=1' : '');
+                }
+            };
+            if (options.totalPages > 1) {
+                paginator.bootstrapPaginator(options);  // 仅大于一页时分页
+            }
+
+            $(".delete-button").on('click', function () {
+                let vocab_id = $(this).data('vid');
+                $.request({
+                    url: '/delete_word',
+                    data: {vocab_id: vocab_id},
+                    onSuccess: function () {
+                        window.location.reload();
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}

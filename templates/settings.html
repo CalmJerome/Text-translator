@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% block pageTitle %}
+    INDEX
+{% endblock %}
+
+{% block pageHeadExtra %}
+    <link rel="stylesheet" href="{% static 'cropper.css' %}">
+    <script src="{% static 'cropper.js' %}"></script>
+    <script src="{% static 'jquery-cropper.js' %}"></script>
+{% endblock %}
+
+{% block pageBody %}
+    <div class="row" style="height:100%">
+        <div class="col-sm-6" style="height: 100%">
+            <img id="image" src="{{ request.user.avatar_url }}">
+            <div class="row">
+                <div class="col-sm-6">
+                    <input id="select-avatar" type="file" accept=".png,.jpg,.jpeg">
+
+                </div>
+                <div class="col-sm-6">
+                    <button id="upload-avatar" class="btn btn-primary pull-right">{% trans 'OK' %}</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+
+            <form id="me-form" class="form-horizontal" role="form" method="post" action="settings">
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{% trans 'Username' %}</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="username" type="text" placeholder="{{ request.user.username }}"
+                               disabled>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{% trans 'Email address' %}</label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            {% if request.user.email_verified %}
+                                <span class="input-group-addon verified-status">{% trans 'Verified' %}</span>
+                            {% else %}
+                                <span class="input-group-addon unverified-status">{% trans 'Not Verified' %}</span>
+                            {% endif %}
+
+                            <input type="email" name="email" class="form-control" value="{{ request.user.email }}">
+
+                        </div>
+                        {% if not request.user.email_verified %}
+                            <a class="pull-left verify-link"
+                               href="{% url 'send_verification_email' %}">{% trans 'Send verification email' %}</a>
+                        {% endif %}
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{% trans 'Old Password' %}</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" name="old_pwd" type="password"
+                               placeholder="{% trans 'Needed when changing password' %}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{% trans 'New Password' %}</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" name="new_pwd" type="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{% trans 'Password Confirmation' %}</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" name="confirm" type="password">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label"></label>
+                    <div class="col-sm-8" style="text-align: center">
+                        {% if error %}
+                            <h4 style="color: red;">{{ error }}</h4>
+                        {% endif %}
+                        <button class="btn btn-primary" id="login-button" type="submit">
+                            {% trans 'Save' %}
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+{% block pageFootExtra %}
+
+    <script>
+        $(function () {
+            var $image = $('#image');
+
+            $image.cropper({
+                aspectRatio: 1,
+                responsive: false,
+                minContainerHeight: 300,
+                viewMode: 1,
+                crop: function (event) {
+
+                }
+            });
+
+            // Get the Cropper.js instance after initialized
+            var cropper = $image.data('cropper');
+
+
+            $("#select-avatar").on('change', function () {
+                if (this.files.length === 0) {
+                    return;
+                }
+
+                if (this.files[0] > 2048) {
+                    showModal("{% trans 'Image cannot exceed 2MB!' %}", "{% trans 'Error' %}");
+                    return;
+                }
+
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    cropper.replace(e.target.result);
+                };
+                reader.readAsDataURL(this.files[0]);
+
+            });
+            $("#upload-avatar").on('click', function () {
+                cropper.getCroppedCanvas().toBlob(function (blob) {
+                    var formData = new FormData();
+                    formData.append('file', blob);
+                    $.ajax('/upload_avatar', {
+                        method: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            window.location.reload();
+                        },
+                        error: function () {
+                            showModal("{% trans 'An error occurred!' %}", "{% trans 'Error' %}")
+                        }
+                    });
+                });
+            })
+
+        })
+
+
+    </script>
+{% endblock %}
